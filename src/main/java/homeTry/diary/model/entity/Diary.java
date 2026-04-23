@@ -6,10 +6,7 @@ import homeTry.member.model.entity.Member;
 import jakarta.persistence.*;
 
 @Entity
-@Table(indexes = {
-        @Index(name = "idx_member_created_at", columnList = "member_id, created_at")
-    }
-)
+@Table
 public class Diary extends BaseEntity {
 
     @Id
