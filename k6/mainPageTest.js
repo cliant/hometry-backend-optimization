@@ -9,7 +9,7 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get('http://localhost:8080/api?date=20260421', {
+  const res = http.get('http://localhost:8080/api?date=20260423', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
