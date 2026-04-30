@@ -4,7 +4,6 @@ import homeTry.common.auth.LoginMemberArgumentResolver;
 import homeTry.common.auth.jwt.JwtAuth;
 import homeTry.common.interceptor.AdminInterceptor;
 import homeTry.common.interceptor.JwtInterceptor;
-import homeTry.common.interceptor.SlowApiInterceptor;
 import homeTry.member.service.MemberService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,25 +20,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final MemberService memberService;
     private final JwtInterceptor jwtInterceptor;
     private final AdminInterceptor adminInterceptor;
-    private final SlowApiInterceptor slowApiInterceptor;
     private final JwtAuth jwtAuth;
 
     @Autowired
     WebMvcConfig(MemberService memberService, JwtInterceptor jwtInterceptor,
-            AdminInterceptor adminInterceptor, SlowApiInterceptor slowApiInterceptor, JwtAuth jwtAuth) {
+            AdminInterceptor adminInterceptor, JwtAuth jwtAuth) {
         this.memberService = memberService;
         this.jwtInterceptor = jwtInterceptor;
         this.adminInterceptor = adminInterceptor;
-        this.slowApiInterceptor = slowApiInterceptor;
         this.jwtAuth = jwtAuth;
     }
 
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(slowApiInterceptor)
-                .addPathPatterns("/**");
-
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/api/**", "/admin/**")
                 .excludePathPatterns("/api/oauth/**", "/resources/**");

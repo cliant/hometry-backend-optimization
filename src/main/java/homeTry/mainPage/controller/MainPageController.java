@@ -9,8 +9,6 @@ import homeTry.member.dto.MemberDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -26,8 +24,6 @@ import java.time.LocalDate;
 @RequestMapping("/api")
 public class MainPageController {
 
-    private static final Logger log = LoggerFactory.getLogger(MainPageController.class);
-
     private final MainPageService mainPageService;
 
     public MainPageController(MainPageService mainPageService) {
@@ -42,12 +38,7 @@ public class MainPageController {
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
             @LoginMember MemberDTO memberDTO) {
 
-        long start = System.currentTimeMillis();
         MainPageResponse response = mainPageService.getMainPage(date, memberDTO.id(), pageable);
-        long elapsed = System.currentTimeMillis() - start;
-        if (elapsed >= 500) {
-            log.warn("[PERF][Controller] SLOW GET /api?date={} total={}ms", date, elapsed);
-        }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
