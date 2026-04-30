@@ -38,7 +38,8 @@ public class MainPageController {
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
             @LoginMember MemberDTO memberDTO) {
 
-        return new ResponseEntity<>(mainPageService.getMainPage(date, memberDTO.id(), pageable),
-                HttpStatus.OK);
+        MainPageResponse response = mainPageService.getMainPage(date, memberDTO.id(), pageable);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

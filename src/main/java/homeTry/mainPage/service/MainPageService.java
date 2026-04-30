@@ -28,31 +28,24 @@ public class MainPageService {
 
     @Transactional(readOnly = true)
     public MainPageResponse getMainPage(LocalDate date, Long memberId, Pageable pageable) {
-
         LocalDate adjustedToday = DateTimeUtil.getAdjustedCurrentDate();
-
         if (adjustedToday.isEqual(date)) {
-            return getTodayMainPageResponse(memberId, date,  pageable);
+            return getTodayMainPageResponse(memberId, date, pageable);
         }
-
         return getHistoricalMainPageResponse(memberId, date, pageable);
-
     }
 
     private MainPageResponse getTodayMainPageResponse(Long memberId, LocalDate date, Pageable pageable) {
-
-        return new MainPageResponse(
-                exerciseTimeService.getExerciseTimesForToday(memberId),
-                exerciseTimeService.getExerciseResponsesForToday(memberId),
-                diaryService.getDiaryByDate(date, memberId, pageable));
-
+        var exerciseTimes = exerciseTimeService.getExerciseTimesForToday(memberId);
+        var exerciseResponses = exerciseTimeService.getExerciseResponsesForToday(memberId);
+        var diaries = diaryService.getDiaryByDate(date, memberId, pageable);
+        return new MainPageResponse(exerciseTimes, exerciseResponses, diaries);
     }
 
     private MainPageResponse getHistoricalMainPageResponse(Long memberId, LocalDate date, Pageable pageable) {
-
-        return new MainPageResponse(
-                exerciseHistoryService.getExerciseHistoriesForDay(memberId, date),
-                exerciseHistoryService.getExerciseResponsesForDay(memberId, date),
-                diaryService.getDiaryByDate(date, memberId, pageable));
+        var exerciseHistories = exerciseHistoryService.getExerciseHistoriesForDay(memberId, date);
+        var exerciseResponses = exerciseHistoryService.getExerciseResponsesForDay(memberId, date);
+        var diaries = diaryService.getDiaryByDate(date, memberId, pageable);
+        return new MainPageResponse(exerciseHistories, exerciseResponses, diaries);
     }
 }
