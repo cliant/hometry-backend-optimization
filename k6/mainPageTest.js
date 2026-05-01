@@ -15,7 +15,8 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get('http://localhost:8080/api?date=20260423', {
+  // 커서 기반 마지막 페이지: 일반 50000건 + member1024 당일 10000건 → ID 50001~60000 → 마지막 커서 59995
+  const res = http.get('http://localhost:8080/api?date=20260423&size=5&lastId=59995', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
