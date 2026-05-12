@@ -9,9 +9,6 @@ import homeTry.member.dto.MemberDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +32,11 @@ public class MainPageController {
     @ApiResponse(responseCode = "200", description = "메인페이지 조회 성공")
     public ResponseEntity<MainPageResponse> mainPage(
             @RequestParam(name = "date") @DateValid @DateTimeFormat(pattern = "yyyyMMdd") LocalDate date,
-            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @RequestParam(name = "size", defaultValue = "5") int size,
             @LoginMember MemberDTO memberDTO) {
 
-        MainPageResponse response = mainPageService.getMainPage(date, memberDTO.id(), pageable);
+        MainPageResponse response = mainPageService.getMainPage(date, memberDTO.id(), lastId, size);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -15,6 +15,9 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     Slice<Diary> findByCreatedAtBetweenAndMember(
             LocalDateTime startOfDay, LocalDateTime endOfDay, Member member, Pageable pageable);
 
+    Slice<Diary> findByCreatedAtBetweenAndMemberAndIdGreaterThan(
+            LocalDateTime startOfDay, LocalDateTime endOfDay, Member member, Long lastId, Pageable pageable);
+
     void deleteByMember(Member member);
 
 }

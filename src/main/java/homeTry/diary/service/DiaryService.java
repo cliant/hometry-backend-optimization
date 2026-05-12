@@ -7,10 +7,9 @@ import homeTry.diary.exception.badRequestException.DiaryNotFoundException;
 import homeTry.diary.model.entity.Diary;
 import homeTry.diary.repository.DiaryRepository;
 import homeTry.member.service.MemberService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +18,6 @@ import java.time.LocalDateTime;
 
 @Service
 public class DiaryService {
-
-    private static final Logger log = LoggerFactory.getLogger(DiaryService.class);
 
     private final DiaryRepository diaryRepository;
     private final MemberService memberService;
@@ -31,23 +28,23 @@ public class DiaryService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<DiaryDto> getDiaryByDate(LocalDate date, Long memberId, Pageable pageable) {
+    public Slice<DiaryDto> getDiaryByDate(LocalDate date, Long memberId, Long lastId, int size) {
 
         LocalDateTime startOfDay = DateTimeUtil.getStartOfDay(date);
         LocalDateTime endOfDay = DateTimeUtil.getEndOfDay(date);
 
-        long dbStart = System.currentTimeMillis();
-        Slice<Diary> diaries = diaryRepository.findByCreatedAtBetweenAndMember(
-                startOfDay, endOfDay, memberService.getMemberEntity(memberId), pageable);
-        log.info("[PERF][DB] findByCreatedAtBetweenAndMember rows={} time={}ms",
-                diaries.getNumberOfElements(), System.currentTimeMillis() - dbStart);
+        PageRequest pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.ASC, "id"));
 
-        long mapStart = System.currentTimeMillis();
-        Slice<DiaryDto> result = diaries.map(DiaryDto::from);
-        log.info("[PERF][Serialization] DiaryDto mapping rows={} time={}ms",
-                result.getNumberOfElements(), System.currentTimeMillis() - mapStart);
+        Slice<Diary> diaries;
+        if (lastId == null) {
+            diaries = diaryRepository.findByCreatedAtBetweenAndMember(
+                    startOfDay, endOfDay, memberService.getMemberEntity(memberId), pageable);
+        } else {
+            diaries = diaryRepository.findByCreatedAtBetweenAndMemberAndIdGreaterThan(
+                    startOfDay, endOfDay, memberService.getMemberEntity(memberId), lastId, pageable);
+        }
 
-        return result;
+        return diaries.map(DiaryDto::from);
     }
 
 
